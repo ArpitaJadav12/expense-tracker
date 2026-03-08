@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/D:/Coding/AJT/ExpenseTracker/web/register.jsp</file>
+            <file>file:/D:/Coding/AJT/ExpenseTracker/src/java/Login/LoginServlet.java</file>
+            <file>file:/D:/Coding/AJT/ExpenseTracker/src/java/Login/RegisterServlet.java</file>
+            <file>file:/D:/Coding/AJT/ExpenseTracker/src/java/Login/LogoutServlet.java</file>
+            <file>file:/D:/Coding/AJT/ExpenseTracker/src/java/Login/DBConnection.java</file>
+            <file>file:/D:/Coding/AJT/ExpenseTracker/web/index.html</file>
+            <file>file:/D:/Coding/AJT/ExpenseTracker/web/home.jsp</file>
+            <file>file:/D:/Coding/AJT/ExpenseTracker/web/addExpense.jsp</file>
+            <file>file:/D:/Coding/AJT/ExpenseTracker/src/java/Login/AddExpenseServlet.java</file>
+            <file>file:/D:/Coding/AJT/ExpenseTracker/web/viewExpense.jsp</file>
+            <file>file:/D:/Coding/AJT/ExpenseTracker/src/java/Login/DeleteExpenseServlet.java</file>
+            <file>file:/D:/Coding/AJT/ExpenseTracker/web/report.jsp</file>
+            <file>file:/D:/Coding/AJT/ExpenseTracker/web/navbar.jsp</file>
+            <file>file:/D:/Coding/AJT/ExpenseTracker/web/sidebar.jsp</file>
+            <file>file:/D:/Coding/AJT/ExpenseTracker/web/profile.jsp</file>
+            <file>file:/D:/Coding/AJT/ExpenseTracker/web/HistoryComparison.jsp</file>
+            <file>file:/D:/Coding/AJT/ExpenseTracker/web/budgetSearch.jsp</file>
+            <file>file:/D:/Coding/AJT/ExpenseTracker/web/emiCalculator.jsp</file>
+            <file>file:/D:/Coding/AJT/ExpenseTracker/web/goals.jsp</file>
+            <file>file:/D:/Coding/AJT/ExpenseTracker/web/tips.jsp</file>
+        </group>
+    </open-files>
+</project-private>
