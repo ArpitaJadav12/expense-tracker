@@ -20,7 +20,7 @@ if("POST".equalsIgnoreCase(request.getMethod())){
         try{
             int amt = Integer.parseInt(amount);
 
-            if(amt > 0){   // ✅ amount must be greater than zero
+            if(amt > 0){
 
                 Connection con = DBConnection.getConnection();
                 PreparedStatement ps = con.prepareStatement(
@@ -54,6 +54,7 @@ if("POST".equalsIgnoreCase(request.getMethod())){
 <title>Add Expense</title>
 
 <style>
+
 body{
     margin:0;
     font-family:Arial;
@@ -62,57 +63,128 @@ body{
     justify-content:center;
     align-items:center;
     height:100vh;
+    font-size:16px;
 }
+
 .card{
     background:white;
-    padding:30px;
-    width:350px;
-    border-radius:10px;
-    box-shadow:0 2px 10px rgba(0,0,0,0.1);
+    padding:40px;
+    width:420px;
+    border-radius:12px;
+    box-shadow:0 4px 15px rgba(0,0,0,0.1);
+    margin:auto;
 }
+
+h2{
+    margin-bottom:5px;
+    font-size:24px;
+}
+
+.subtitle{
+    color:#777;
+    font-size:15px;
+    margin-bottom:20px;
+}
+
+label{
+    font-size:16px;
+    color:#444;
+}
+
 input,select{
     width:100%;
-    padding:8px;
+    padding:10px;
+    margin-top:5px;
     margin-bottom:15px;
-    box-sizing:border-box;   /* ✅ makes all fields same size */
+    box-sizing:border-box;
+    font-size:15px;
 }
+
 button{
     width:100%;
-    padding:10px;
+    padding:12px;
     background:#2196F3;
     color:white;
     border:none;
     cursor:pointer;
+    border-radius:4px;
+    font-size:16px;
 }
+
+button:hover{
+    background:#1976D2;
+}
+
+.goal-btn{
+    margin-top:10px;
+}
+
+.tips{
+    margin-top:20px;
+    font-size:14px;
+    color:#666;
+}
+
+.tips ul{
+    padding-left:18px;
+    margin-top:8px;
+}
+
 </style>
 
 </head>
+
 <body>
+
 <jsp:include page="sidebar.jsp"/>
 
 <div class="card">
-<h3>Add Expense</h3>
+
+<h2>Add Expense</h2>
+
+<p class="subtitle">
+Track your spending by adding a new expense.
+</p>
 
 <form method="post">
 
+<label>Category</label>
 <select name="category" required>
-<option value="">Select</option>
-<option value="Food">Food</option>
-<option value="Travel">Travel</option>
-<option value="Shopping">Shopping</option>
-<option value="Bills">Bills</option>
-<option value="Hospitals">Hospitals</option>
-<option value="Stationary">Stationary</option>
-<option value="Other">Other</option>
+<option value="">Select Category</option>
+<option value="Food">🍔 Food</option>
+<option value="Travel">✈️ Travel</option>
+<option value="Shopping">🛍 Shopping</option>
+<option value="Bills">💡 Bills</option>
+<option value="Hospitals">🏥 Hospitals</option>
+<option value="Stationary">📚 Stationary</option>
+<option value="Other">📦 Other</option>
 </select>
 
-<input type="number" name="amount" min="1" required>  <!-- ✅ HTML validation -->
+<label>Amount</label>
+<input type="number" name="amount" min="1" step="1" placeholder="Enter Amount" required>
 
-<input type="date" name="date" required>
+<label>Date</label>
+<input type="date" name="date" value="<%= java.time.LocalDate.now() %>" required>
 
-<button type="submit">Add</button>
+<button type="submit">Add Expense</button>
 
 </form>
+
+<div class="tips">
+<b>Tips:</b>
+<ul>
+<li>Add expenses daily to track spending better</li>
+<li>Use the correct category for accurate reports</li>
+<li>Review your expenses regularly</li>
+</ul>
+</div>
+
+<a href="goals.jsp">
+<button type="button" class="goal-btn">
+🎯 Set / View Savings Goal
+</button>
+</a>
+
 </div>
 
 </body>

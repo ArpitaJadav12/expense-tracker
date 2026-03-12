@@ -48,7 +48,7 @@ button{padding:6px 12px;background:#2E86C1;color:white;border:none;border-radius
 </div>
 
 <div class="card">
-<a href="LogoutServlet.java"><button>Logout</button></a>
+<a href="logout.jsp"><button>Logout</button></a>
 </div>
 
 </div>

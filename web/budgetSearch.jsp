@@ -3,192 +3,159 @@
 <%@page import="Login.DBConnection"%>
 
 <%
-if(session.getAttribute("userEmail")==null){
-    response.sendRedirect("index.html");
-    return;
-}
-
 request.setAttribute("activePage","budget");
 
 String email=(String)session.getAttribute("userEmail");
 
 Connection con=DBConnection.getConnection();
+Statement st=con.createStatement();
 
-/* ================= SAVE / UPDATE BUDGET ================= */
-
+/* ===== SAVE / UPDATE BUDGET ===== */
 String newBudget=request.getParameter("newBudget");
 
-if(newBudget!=null && !newBudget.trim().equals("")){
+if(newBudget!=null && !newBudget.equals("")){
 
-    double budgetValue = Double.parseDouble(newBudget);
+   double budgetValue = Double.parseDouble(newBudget);
 
-    if(budgetValue >= 0){
+   if(budgetValue >= 0){
 
-        PreparedStatement check=con.prepareStatement(
-        "SELECT * FROM budget WHERE user_email=?");
+      ResultSet check=st.executeQuery(
+      "SELECT * FROM budget WHERE user_email='"+email+"'");
 
-        check.setString(1,email);
-
-        ResultSet rsCheck=check.executeQuery();
-
-        if(rsCheck.next()){
-
-            PreparedStatement update=con.prepareStatement(
-            "UPDATE budget SET amount=? WHERE user_email=?");
-
-            update.setDouble(1,budgetValue);
-            update.setString(2,email);
-            update.executeUpdate();
-
-        }else{
-
-            PreparedStatement insert=con.prepareStatement(
-            "INSERT INTO budget(user_email,amount) VALUES(?,?)");
-
-            insert.setString(1,email);
-            insert.setDouble(2,budgetValue);
-            insert.executeUpdate();
-        }
-    }
+      if(check.next()){
+         st.executeUpdate(
+         "UPDATE budget SET amount="+budgetValue+
+         " WHERE user_email='"+email+"'");
+      }else{
+         st.executeUpdate(
+         "INSERT INTO budget(id,user_email,amount) VALUES(NULL,'"
+         +email+"',"+budgetValue+")");
+      }
+   }
 }
 
-/* ================= FETCH BUDGET ================= */
-
+/* ===== FETCH BUDGET DATA ===== */
 double budget=0,total=0;
 
-PreparedStatement b=con.prepareStatement(
-"SELECT amount FROM budget WHERE user_email=?");
+ResultSet b=st.executeQuery(
+"SELECT amount FROM budget WHERE user_email='"+email+"'");
+if(b.next()) budget=b.getDouble(1);
 
-b.setString(1,email);
+ResultSet t=st.executeQuery(
+"SELECT SUM(amount) FROM expenses WHERE user_email='"+email+"'");
+if(t.next()) total=t.getDouble(1);
 
-ResultSet rsBudget=b.executeQuery();
-
-if(rsBudget.next())
-    budget=rsBudget.getDouble(1);
-
-/* ================= FETCH EXPENSE TOTAL ================= */
-
-PreparedStatement t=con.prepareStatement(
-"SELECT SUM(amount) FROM expenses WHERE user_email=?");
-
-t.setString(1,email);
-
-ResultSet rsTotal=t.executeQuery();
-
-if(rsTotal.next())
-    total=rsTotal.getDouble(1);
-
-/* ================= CALCULATIONS ================= */
-
+/* ===== CALCULATIONS ===== */
 double remaining=budget-total;
 double used=0;
 
-if(budget>0)
-    used=(total/budget)*100;
+if(budget!=0)
+   used=(total/budget)*100;
 
-/* ================= STATUS ================= */
-
+/* ===== STATUS ===== */
 String msg="";
 String barColor="#3b82f6";
 
 if(used>=100){
-    msg="❌ Budget Exceeded!";
-    barColor="#ef4444";
+   msg="❌ Budget Exceeded!";
+   barColor="#ef4444";
 }
 else if(used>=80){
-    msg="⚠ Almost reaching budget";
-    barColor="#f59e0b";
+   msg="⚠ Almost reaching budget";
+   barColor="#f59e0b";
 }
 else{
-    msg="✔ Budget Healthy";
+   msg="✔ Budget Healthy";
 }
 
-/* ================= SEARCH ================= */
+/* ===== SEARCH (CATEGORY + DATE + AMOUNT) ===== */
 
 String cat=request.getParameter("category");
 String sDate=request.getParameter("searchDate");
+String sAmount=request.getParameter("searchAmount");
 
-PreparedStatement searchStmt=null;
+String sql="SELECT * FROM expenses WHERE user_email='"+email+"'";
+
+if(cat!=null && !cat.equals(""))
+    sql += " AND category LIKE '%"+cat+"%'";
+
+if(sDate!=null && !sDate.equals(""))
+    sql += " AND expense_date='"+sDate+"'";
+
+if(sAmount!=null && !sAmount.equals(""))
+    sql += " AND amount="+sAmount;
+
 ResultSet rsSearch=null;
 boolean found=false;
 
-if(cat!=null && sDate!=null && !cat.equals("") && !sDate.equals("")){
-
-    searchStmt=con.prepareStatement(
-    "SELECT amount FROM expenses WHERE user_email=? AND category=? AND expense_date=?");
-
-    searchStmt.setString(1,email);
-    searchStmt.setString(2,cat);
-    searchStmt.setString(3,sDate);
-
-    rsSearch=searchStmt.executeQuery();
+if(cat!=null || sDate!=null || sAmount!=null){
+   rsSearch=st.executeQuery(sql);
 }
 %>
 
 <html>
 <head>
-
 <style>
 
 body{
-margin:0;
-font-family:'Segoe UI';
-background:#f4f6fb;
+ margin:0;
+ font-family:'Segoe UI';
+ background:#f4f6fb;
 }
 
 .main{
-margin-left:260px;
-padding:25px;
+ margin-left:260px;
+ padding:25px;
 }
 
 .card{
-background:white;
-border-radius:16px;
-padding:22px;
-margin-bottom:20px;
-box-shadow:0 4px 12px rgba(0,0,0,0.08);
+ background:white;
+ border-radius:16px;
+ padding:22px;
+ margin-bottom:20px;
+ box-shadow:0 4px 12px rgba(0,0,0,0.08);
 }
 
 .progress{
-width:100%;
-height:14px;
-background:#ddd;
-border-radius:10px;
-overflow:hidden;
+ width:100%;
+ height:14px;
+ background:#ddd;
+ border-radius:10px;
+ overflow:hidden;
 }
 
 .progress-bar{
-height:14px;
-border-radius:10px;
+ height:14px;
+ border-radius:10px;
 }
 
 input,select{
-padding:10px;
-border:1px solid #ccc;
-border-radius:8px;
-margin-right:8px;
+ padding:10px;
+ border:1px solid #ccc;
+ border-radius:8px;
+ margin-right:8px;
 }
 
 button{
-padding:10px 15px;
-background:#3b82f6;
-border:none;
-color:white;
-border-radius:8px;
-cursor:pointer;
+ padding:10px 15px;
+ background:#3b82f6;
+ border:none;
+ color:white;
+ border-radius:8px;
+ cursor:pointer;
 }
 
-button:hover{
-background:#2563eb;
+.status{
+ font-weight:bold;
+ margin-top:10px;
 }
 
 .result{
-padding:10px;
-border-bottom:1px solid #eee;
+ padding:8px 0;
+ border-bottom:1px solid #eee;
 }
 
 </style>
-
 </head>
 
 <body>
@@ -199,21 +166,16 @@ border-bottom:1px solid #eee;
 
 <h2>💰 Smart Budget System</h2>
 
-<!-- ================= BUDGET ================= -->
-
+<!-- ===== BUDGET CARD ===== -->
 <div class="card">
 
 <h3>Set Monthly Budget</h3>
 
 <form method="get">
-
-<input type="number"
-name="newBudget"
-placeholder="Enter budget amount"
-min="0" required>
-
+<input type="number" name="newBudget"
+       placeholder="Enter budget amount"
+       min="0" required>
 <button>Save Budget</button>
-
 </form>
 
 <hr>
@@ -223,31 +185,25 @@ min="0" required>
 <p><b>Remaining:</b> ₹ <%=remaining%></p>
 
 <div class="progress">
-
 <div class="progress-bar"
 style="width:<%=used%>%; background:<%=barColor%>;">
 </div>
-
 </div>
 
 <p><%=String.format("%.1f",used)%>% used</p>
-
-<div><b><%=msg%></b></div>
+<div class="status"><%=msg%></div>
 
 </div>
 
-<!-- ================= SEARCH ================= -->
-
+<!-- ===== SEARCH CARD ===== -->
 <div class="card">
 
 <h3>🔎 Search Expense</h3>
 
 <form method="get">
 
-<select name="category" required>
-
-<option value="">Select Category</option>
-
+<select name="category">
+<option value="">All Categories</option>
 <option value="Food">Food</option>
 <option value="Travel">Travel</option>
 <option value="Shopping">Shopping</option>
@@ -255,10 +211,13 @@ style="width:<%=used%>%; background:<%=barColor%>;">
 <option value="Hospitals">Hospitals</option>
 <option value="Stationary">Stationary</option>
 <option value="Other">Other</option>
-
 </select>
 
-<input type="date" name="searchDate" required>
+<input type="date" name="searchDate">
+
+<input type="number" step="0.01"
+name="searchAmount"
+placeholder="Amount">
 
 <button>Search</button>
 
@@ -269,28 +228,26 @@ style="width:<%=used%>%; background:<%=barColor%>;">
 <%
 if(rsSearch!=null){
 
-while(rsSearch.next()){
-found=true;
+ while(rsSearch.next()){
+   found=true;
 %>
 
 <div class="result">
-
-💰 Amount = ₹ <%=rsSearch.getDouble("amount")%>
-
+<b><%=rsSearch.getString("category")%></b> —
+₹ <%=rsSearch.getDouble("amount")%> —
+<%=rsSearch.getString("expense_date")%>
 </div>
 
 <%
-}
+ }
 
-if(!found){
+ if(!found){
 %>
-
 <div style="color:red;font-weight:bold;">
-No expense on this date for this category
+No expenses found.
 </div>
-
 <%
-}
+ }
 }
 %>
 
